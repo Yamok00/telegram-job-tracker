@@ -1,0 +1,13 @@
+# Environments
+.env
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Google API Credentials
+token.json
+credentials.json
+
+# SQLite Database
+job_tracker.db
