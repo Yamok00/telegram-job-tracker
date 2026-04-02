@@ -153,7 +153,7 @@ def fetch_and_process_emails(db: Session, proactive_alert_callback=None):
                 
                 existing_ids.add(msg_id)
                 
-                # Proactive WhatsApp alerts for specific triggers
+                # Proactive Telegram alerts for specific triggers
                 if intent.get("is_new_assessment_or_invitation") and proactive_alert_callback:
                     alert_msg = f"🔔 *Action Required!* You have a new update from {company} for the {role} role.\nStatus: {app.status}\nSubject: {subject}"
                     proactive_alert_callback(alert_msg)

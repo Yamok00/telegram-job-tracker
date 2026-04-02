@@ -1,13 +1,48 @@
-# Environments
+# ─── Environments & Secrets ───
 .env
-venv/
-__pycache__/
-*.pyc
-.DS_Store
+.env.local
+.env.production
 
-# Google API Credentials
+# ─── Google API Credentials ───
 token.json
 credentials.json
 
-# SQLite Database
-job_tracker.db
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ─── Virtual Environments ───
+venv/
+.venv/
+env/
+ENV/
+
+# ─── IDE / Editor ───
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ─── OS Files ───
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Database ───
+*.db
+*.sqlite3
+
+# ─── Logs ───
+*.log
+
+# ─── Misc ───
+.gemini/
