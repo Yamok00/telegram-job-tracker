@@ -60,10 +60,36 @@ def process_telegram_command(command_text: str, chat_id: str, db: Session):
             
         send_telegram_message(chat_id, reply)
         
+    elif cmd == "list":
+        apps = db.query(Application).all()
+        if not apps:
+            reply = "You haven't tracked any applications yet."
+            send_telegram_message(chat_id, reply)
+            return
+            
+        grouped = {}
+        for app in apps:
+            if app.status not in grouped:
+                grouped[app.status] = []
+            grouped[app.status].append(app)
+            
+        reply = "📋 *All Applications:*\n\n"
+        for status, app_list in grouped.items():
+            reply += f"*{status.upper()}*\n"
+            for app in app_list:
+                reply += f"- {app.company} ({app.role})\n"
+            reply += "\n"
+            
+        # Telegram max length is 4096. Truncate if too long
+        if len(reply) > 4000:
+            reply = reply[:4000] + "\n... (Message truncated)"
+            
+        send_telegram_message(chat_id, reply)
+        
     elif cmd == "/start":
-        reply = "🤖 *Welcome to the Ultimate Job Tracker Bot!*\n\nAvailable commands:\n- *Pending*: List companies that haven't responded > 7 days.\n- *Summary*: Status of active applications."
+        reply = "🤖 *Welcome to the Ultimate Job Tracker Bot!*\n\nAvailable commands:\n- *Pending*: List jobs waiting > 7 days.\n- *Summary*: Active applications count.\n- *List*: Show everything grouped by status."
         send_telegram_message(chat_id, reply)
         
     else:
-        reply = "Unknown command.\n\nAvailable commands:\n- *Pending*: List companies that haven't responded > 7 days.\n- *Summary*: Status of active applications."
+        reply = "Unknown command.\n\nAvailable commands:\n- *Pending*: List jobs waiting > 7 days.\n- *Summary*: Active applications count.\n- *List*: Show everything grouped by status."
         send_telegram_message(chat_id, reply)
