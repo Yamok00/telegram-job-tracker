@@ -1,3 +1,7 @@
+import threading
+import time
+from models import SessionLocal
+
 from fastapi import FastAPI, BackgroundTasks, Form, Depends, Request
 from fastapi.responses import PlainTextResponse, Response
 from typing import Annotated
@@ -9,12 +13,29 @@ from telegram_service import process_telegram_command, send_telegram_message
 from config import settings
 import requests
 
-app = FastAPI(title="Ultimate Job Tracker API")
+# Periodic sync function
+def _periodic_sync(interval_seconds: int = 300):
+    """Continuously run email sync every `interval_seconds`.
+    Runs in a daemon thread started at app startup.
+    """
+    while True:
+        try:
+            db = SessionLocal()
+            fetch_and_process_emails(db, proactive_alert)
+        except Exception as e:
+            print(f"[Periodic Sync] Error during sync: {e}")
+        finally:
+            db.close()
+        time.sleep(interval_seconds)
 
 @app.on_event("startup")
 def on_startup():
     init_db()
     print("Database initialized.")
+    # Start periodic sync thread (runs every 5 minutes)
+    thread = threading.Thread(target=_periodic_sync, daemon=True)
+    thread.start()
+    print("Started periodic email sync thread.")
 
 def proactive_alert(body: str):
     if settings.user_telegram_chat_id:
